@@ -1,25 +1,23 @@
-import React from 'react';
-import logo from './logo.svg';
-import './App.css';
+import React, {useEffect, useState} from 'react';
+import mockData from "./mockApi/databaseTree.json";
+import {TreeNodeData} from "./types";
+import Tree from "./components/Tree/Tree";
 
-function App() {
+const App: React.FC = () => {
+  const [data, setData] = useState<TreeNodeData[]>([]);
+  
+  useEffect(() => {
+    // here normally would be an async function request to fetch the desired data
+    const getData = () => {
+      setData(mockData)
+    }
+    getData()
+  },[])
+
   return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.tsx</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
-    </div>
+      <div>
+        <Tree data={data} />
+      </div>
   );
 }
 

@@ -1,52 +1,58 @@
 import React, { useState } from 'react';
 import styled from 'styled-components';
 import { MdOutlineExpandMore, MdExpandLess } from "react-icons/md";
-interface TreeNodeProps {
-    hasPermission: boolean;
-    isSelected: boolean;
-}
+
+import {TreeNodeData, TreeNodeProps, TreeProps} from "../../types";
 
 const TreeNode = styled.div<TreeNodeProps>`
   display: flex;
   align-items: center;
   font-size: 1rem;
   padding: 0.5rem 1rem;
-  cursor: ${({ hasPermission }) => (hasPermission ? 'pointer' : 'default')};
-  color: ${({ hasPermission }) => (hasPermission ? '#333' : '#999')};
-  background-color: ${({ isSelected }) => (isSelected ? '#eee' : 'transparent')};
+  cursor: ${props =>
+          props.$hasPermission ? 'pointer' : 'default'};
+  color: ${props => 
+          props.$hasPermission ? '#333' : '#999'};
+  background-color: ${props => 
+          props.$isSelected ? '#eee' : 'transparent'};
 
   &:hover {
-    background-color: ${({ hasPermission }) => (hasPermission ? '#f2f2f2' : 'transparent')};
+    background-color: ${props => 
+            props.$hasPermission ? '#f2f2f2' : 'transparent'};
   }
 `;
+    // background-color: ${({ hasPermission }) => (hasPermission ? '#f2f2f2' : 'transparent')};
+// cursor: ${({ hasPermission }) => (hasPermission ? 'pointer' : 'default')};
+// color: ${({ hasPermission }) => (hasPermission ? '#333' : '#999')};
+// background-color: ${({ isSelected }) => (isSelected ? '#eee' : 'transparent')};
 
-interface TreeProps {
-    data: TreeNodeData[];
-}
+const NestedNode = styled.div`
+  margin-left: 30px;
+`;
 
-interface TreeNodeData {
-    id: string;
-    label: string;
-    type: string;
-    hasPermission: boolean;
-    isSelected: boolean;
-    children?: TreeNodeData[];
-}
+const Tree: React.FC<TreeProps> = ({ data }: TreeProps) => {
+    const [isSelected, setIsSelected] = useState(false);
 
-const Tree = ({ data }: TreeProps) => {
-    const renderTreeNode = (node: TreeNodeData) => (
-        <>
+    const toggleOpen = () => {
+        setIsSelected(!isSelected);
+    };
+    const renderTreeNode = (node: TreeNodeData, index: number) => (
+        <div key={index}>
             <TreeNode
                 key={node.id}
-                hasPermission={node.hasPermission}
-                isSelected={node.isSelected}
+                $hasPermission={node.hasPermission}
+                $isSelected={isSelected}
+                onClick={toggleOpen}
             >
+                {isSelected ? <MdExpandLess /> : <MdOutlineExpandMore/>}
                 {node.label}
             </TreeNode>
-            {node.children && (
-                <Tree data={node.children} />
+            {node.children && isSelected && (
+                <NestedNode>
+                    <Tree key={node.label} data={node.children} />
+                </NestedNode>
             )}
-        </>
+        </div>
     );
 
     return (
@@ -55,3 +61,5 @@ const Tree = ({ data }: TreeProps) => {
         </>
     );
 };
+
+export default Tree;
