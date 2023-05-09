@@ -9,7 +9,7 @@
         "id": 2,
         "label": "Node 1.1",
         "type": "database",
-        "hasPermission": true,
+        "hasPermission": false,
         "children": [
           {
             "id": 4,
@@ -79,7 +79,23 @@
                     "id": 18,
                     "label": "Node 1.2.1.3.1",
                     "type": "column",
-                    "hasPermission": true
+                    "hasPermission": true,
+                    "children": [
+                      {
+                        "id": 19,
+                        "label": "Node 1.2.1.3.1.1",
+                        "type": "infinite1",
+                        "hasPermission": true,
+                        "children": [
+                          {
+                            "id": 20,
+                            "label": "Node 1.2.1.3.1.1.1",
+                            "type": "infinite2",
+                            "hasPermission": true
+                          }
+                        ]
+                      }
+                    ]
                   }
                 ]
               }

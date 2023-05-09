@@ -1,10 +1,12 @@
+import { IconType } from 'react-icons';
+
 export interface TreeNodeProps {
-    $hasPermission: boolean;
-    $isSelected: boolean;
+    $hasPermission: boolean | undefined;
+    $isOpen: boolean;
 }
 
 export interface TreeProps {
-    data: TreeNodeData[];
+    data: TreeNodeData;
 }
 
 export interface TreeNodeData {
@@ -12,6 +14,18 @@ export interface TreeNodeData {
     label: string;
     type: string;
     hasPermission: boolean;
-    // isSelected: boolean;
     children?: TreeNodeData[];
+}
+export interface NodeIconProps {
+    type: string;
+}
+
+export interface IconMapItem {
+    type: string;
+    icon: IconType;
+    color: string;
+}
+
+export interface IconMapProps {
+    [key: string]: IconMapItem;
 }

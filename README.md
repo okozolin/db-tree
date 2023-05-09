@@ -5,8 +5,10 @@ react.typescript.styled-components
 1. support for infinite depth by implementing recursive tree
 2. support a large quantity of items by fetching data selectively upon clicking a permited entry.
 
+### Adding icons and labels in `utils/iconsMap.ts` file
+### Adding labels in `constants/general.ts` file
+### 
 
-# Getting Started with Create React App
 
 This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
 
