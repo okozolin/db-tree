@@ -1,12 +1,14 @@
 //----------------------------------------------------------------
 //        API for DB
 //----------------------------------------------------------------
-//  the api is of the format:
-//     `${BASE_URL}/${type}/${id}?${queryParams}
-//  except for the first one which is just
-//      `${BASE_URL}`
-//
-// e.g.queryParams:
+//  the api is of the following format which supports any `type` as long as the corresponding end point is defined on server side:
+//     `${BASE_URL}/${type}/${id}?${queryParams}`
+//  type can be: connection, database, schema, table, column, etc...
+//  queryParams should consist of:
+//      - path
+//      - page
+//      - pageSize
+//  e.g.queryParams
 //      path=${path}&page=${page}&pageSize=${pageSize}
 // e.g path:
 //      path="connectionId={:connectionId};databaseId={:databaseId};schemaId={:schemaId};tableId={:tableId}"
@@ -25,74 +27,69 @@
 //  7. 'api/db/columns/:id?path="connectionId={:connectionId};databaseId={:databaseId};schemaId={:schemaId};tableId={:tableId}"&page={:page}&pageSize={:pageSize}
 
 import axios, { AxiosResponse } from 'axios';
-import {Page, TreeNodeData} from "../types";
-import {PAGE_SIZE} from "../constants/general";
+import {Page, QueryParams, TreeNodeData} from "../types";
+import MockAdapter from 'axios-mock-adapter';
 
+// Create a new instance of axios
+export const axiosInstance = axios.create({
+    baseURL: 'localhost:3000/api'
+});
 
+// Create a new instance of MockAdapter and pass in the axios instance
+const mockAdapter = new MockAdapter(axiosInstance);
 
-export class DatabaseService {
-    private baseUrl = 'http://localhost:3000/api/db';
+// Configure the mock adapter to intercept GET requests to the /api/posts endpoint
+//it's here for mocking purposes
+mockAdapter.onGet('/db',{params: {
+        path: "" ,
+        page: 1,
+        pageSize: 2
+    }}).reply(200, {
+    items: [
+        {
+            "id": 1,
+            "label": "Node 1",
+            "type": "connection",
+            "hasPermission": true
+        },
+        {
+            "id": 25,
+            "label": "Node 25",
+            "type": "connection",
+            "hasPermission": true
+        }
+    ],
+    total: 3
+});
 
-    //no need for pagination here, assuming the amount of data is not large
-    async getTree(queryParams:string = `path=''&page=1&pageSize=${PAGE_SIZE}`): Promise<TreeNodeData[]> {
-        const response: AxiosResponse<TreeNodeData[]> = await axios.get(`${this.baseUrl}`, {params: `${queryParams}`});
-        return response.data;
-    }
-    async getConnections(queryParams:string = `path=''&page=1&pageSize=${PAGE_SIZE}`): Promise<TreeNodeData[]> {
-        const response: AxiosResponse<TreeNodeData[]> = await axios.get(`${this.baseUrl}/connections`, {params: `${queryParams}`});
-        return response.data;
-    }
+class DatabaseService {
+    private baseUrl = '/db';
 
-    async getNodeById(id: string, type: string, queryParams:string = `path=''&page=1&pageSize=${PAGE_SIZE}`): Promise<TreeNodeData> {
-        const response: AxiosResponse<TreeNodeData> = await axios.get(`${this.baseUrl}/${type}s/${id}`, {params: `${queryParams}`});
-        return response.data;
-    }
+    async getTree(queryParams: QueryParams): Promise<Page<TreeNodeData>> {
+        console.log("*** databaseService.getTree request URL==>",
+            `${this.baseUrl}?path=${queryParams.path}&page=${queryParams.page}&pageSize=${queryParams.pageSize}`)
 
-    async getDatabases(connectionId: string, page: number, pageSize: number): Promise<Page<TreeNodeData>> {
-        const response: AxiosResponse<Page<TreeNodeData>> = await axios.get(`${this.baseUrl}/databases`, {
-            params: {connectionId, page, pageSize},
-        });
-        return response.data;
-    }
-
-    async getDatabaseById(id: string): Promise<TreeNodeData> {
-        const response: AxiosResponse<TreeNodeData> = await axios.get(`${this.baseUrl}/databases/${id}`);
-        return response.data;
-    }
-
-    async getSchemas(connectionId: string, databaseId: string, page: number, pageSize: number): Promise<Page<TreeNodeData>> {
-        const response: AxiosResponse<Page<TreeNodeData>> = await axios.get(`${this.baseUrl}/schemas`, {
-            params: {connectionId, databaseId, page, pageSize},
-        });
-        return response.data;
-    }
-
-    async getSchemaById(id: string): Promise<TreeNodeData> {
-        const response: AxiosResponse<TreeNodeData> = await axios.get(`${this.baseUrl}/schemas/${id}`);
-        return response.data;
-    }
-
-    async getTables(connectionId: string, databaseId: string, schemaId: string, page: number, pageSize: number): Promise<Page<TreeNodeData>> {
-        const response: AxiosResponse<Page<TreeNodeData>> = await axios.get(`${this.baseUrl}/tables`, {
-            params: {connectionId, databaseId, schemaId, page, pageSize},
-        });
+        const response: AxiosResponse<Page<TreeNodeData>> = await axiosInstance.get(`${this.baseUrl}`,
+            {params: {
+                path: queryParams.path ,
+                page: queryParams.page,
+                pageSize: queryParams.pageSize
+            }});
         return response.data;
     }
 
-    async getTableById(id: string): Promise<TreeNodeData> {
-        const response: AxiosResponse<TreeNodeData> = await axios.get(`${this.baseUrl}/tables/${id}`);
-        return response.data;
-    }
+    async getNodeById(id: string, type: string, queryParams: QueryParams): Promise<Page<TreeNodeData>> {
+        console.log("*** databaseService.getNodeById request URL==>",
+            `${this.baseUrl}/${type}s/${id}?path=${queryParams.path}&page=${queryParams.page}&pageSize=${queryParams.pageSize}`)
 
-    async getColumns(connectionId: string, databaseId: string, schemaId: string, tableId: string, page: number, pageSize: number): Promise<Page<TreeNodeData>> {
-        const response: AxiosResponse<Page<TreeNodeData>> = await axios.get(`${this.baseUrl}/columns`, {
-            params: {connectionId, databaseId, schemaId, tableId, page, pageSize},
-        });
-        return response.data;
-    }
-
-    async getColumnById(id: string): Promise<TreeNodeData> {
-        const response: AxiosResponse<TreeNodeData> = await axios.get(`${this.baseUrl}/columns/${id}`);
+        const response: AxiosResponse<Page<TreeNodeData>> = await axiosInstance.get(`${this.baseUrl}/${type}s/${id}`,
+            {params: {
+                    path: queryParams.path ,
+                    page: queryParams.page,
+                    pageSize: queryParams.pageSize
+                }});
         return response.data;
     }
 }
+
+export const databaseService = new DatabaseService()

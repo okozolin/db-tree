@@ -1,7 +1,9 @@
+import React from "react";
 import { IconType } from 'react-icons';
 
 export interface TreeNodeProps {
-    $hasPermission: boolean | undefined;
+    $hasPermission: boolean;
+    $hasChildren: boolean | undefined;
     $isOpen: boolean;
 }
 
@@ -14,10 +16,11 @@ export interface TreeNodeData {
     label: string;
     type: string;
     hasPermission: boolean;
-    children?: TreeNodeData[];
+    // children?: TreeNodeData[];
 }
 export interface NodeIconProps {
     type: string;
+    $hasPermission: boolean;
 }
 
 export interface IconMapItem {
@@ -28,4 +31,23 @@ export interface IconMapItem {
 
 export interface IconMapProps {
     [key: string]: IconMapItem;
+}
+
+export interface NodeTextProps {
+    data: TreeNodeData;
+    total: number;
+    onExpand: ()=> void
+}
+export interface Page<T> {
+    items: T[];
+    total: number;
+}
+export interface QueryParams {
+    path:string;
+    page:number;
+    pageSize:number
+}
+export interface TooltipProps {
+    title: string;
+    children: React.ReactNode;
 }

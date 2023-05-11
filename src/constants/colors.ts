@@ -7,4 +7,5 @@ export const platformColors = {
     darkGrey:   '#333',
     lightGrey:  '#DADADF4A',
     error:      '#D0021B',
+    disabled:   '#999'
 }

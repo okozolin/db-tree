@@ -1,10 +1,10 @@
 import React, {useEffect, useState} from 'react';
-import mockData from "./mockApi/databaseTree.json";
-import {TreeNodeData} from "./types";
+import {Page, TreeNodeData} from "./types";
 import Tree from "./components/Tree/Tree";
 import {MdFace} from "react-icons/md";
 import styled from "styled-components";
 import {platformColors} from "./constants/colors";
+import {fetchTree} from "./utils/fetch";
 
 const Header = styled.div`
   text-align: center;
@@ -14,7 +14,6 @@ const Header = styled.div`
   font-size: 20px;
   margin: 1rem;
 `
-
 const AppContainer = styled.div`
   display: flex;
   flex-direction: column;
@@ -22,17 +21,32 @@ const AppContainer = styled.div`
 const MyLogo = styled.div`
   color: ${platformColors.lightPink}
 `;
+
+const MoreButton = styled.button`
+  margin: 1rem 2rem;
+  width: 8rem;
+  height: 2rem;
+  color: ${platformColors.mint};
+  border: none;
+  background-color: unset;
+  &:hover {
+    cursor: pointer;
+  }
+`;
+
 const App: React.FC = () => {
-  const [data, setData] = useState<TreeNodeData[]>([]);
+  const [data, setData] = useState<Page<TreeNodeData>>({items: [], total: 0});
+  const [page, setPage] = useState<number>(1)
 
   useEffect(() => {
-    // here normally would be an async function request to fetch the desired data
-    const getData = () => {
-      setData(mockData)
-    }
-    getData()
-  },[])
+    fetchTree(page, setData);
+  }, [page]);
 
+  const onMoreClick = ()=> {
+    console.log("clicked more in App")
+    setPage((prevPage) => prevPage + 1);
+  }
+  console.log("App: page in App==>", page)
   return (
       <AppContainer>
         <Header>
@@ -41,11 +55,12 @@ const App: React.FC = () => {
             oritkozolin 2023
           </MyLogo>
         </Header>
-        {data.map((node:TreeNodeData, index:number)=>(
+        {data.items.map((node:TreeNodeData, index:number)=>(
           <div key={index}>
             <Tree data={node}/>
           </div>
         ))}
+        <MoreButton onClick={onMoreClick}>Load More...</MoreButton>
       </AppContainer>
   )
 }

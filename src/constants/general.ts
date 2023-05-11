@@ -1,6 +1,6 @@
 // PAGINATION
 //----------------------------------
-export const MAX_ITEMS_PER_PAGE = 2
+export const PAGE_SIZE = 2
 
 // NODE LABELS
 //----------------------------------

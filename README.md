@@ -3,12 +3,19 @@ react.typescript.styled-components
 
 ### Main features
 1. support for infinite depth by implementing recursive tree
-2. support a large quantity of items by fetching data selectively upon clicking a permited entry.
+2. support a large quantity of items by fetching data selectively upon clicking node with permission.
+3. nested tree component that can handle large trees using lazy loading, pagination, and limited item counts per level.
+
 
 ### Adding icons and labels in `utils/iconsMap.ts` file
 ### Adding labels in `constants/general.ts` file
 ### 
 
+### UI highlights
+1. colorful icons for each category
+2. highlight row on hover
+3. change cursor when node is the last one or has no permission
+4. grey out nodes with no permission
 
 This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
 
