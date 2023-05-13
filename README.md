@@ -1,21 +1,47 @@
-# DB-Tree
+# Database Navigator Tree
 react.typescript.styled-components
 
-### Main features
-1. support for infinite depth by implementing recursive tree
-2. support a large quantity of items by fetching data selectively upon clicking node with permission.
-3. nested tree component that can handle large trees using lazy loading, pagination, and limited item counts per level.
+![preview](db-tree.gif)
 
+## Specifications
+- The structure of the DB integration is:
 
-### Adding icons and labels in `utils/iconsMap.ts` file
-### Adding labels in `constants/general.ts` file
-### 
+  Connection > Database > Schema > Table > Column.
+- A user needs permission in order to expand an item.
+  If he doesn’t have permission - he can only view the item, but not it’s content. (This is relevant to any level of the tree)
 
+## Main implementation features
+1. Support for infinite depth by implementing recursive tree
+2. Lazy loading support a large quantity of items by fetching data selectively upon clicking node with permission on the load more icon.
+3. Nested tree component that can handle large trees using lazy loading, pagination, and limited item counts per level.
+4. Configurable icons for the nested levels in  `utils/iconsMap.ts` file
+5. Configurable labels for the nested levels in `constants/general.ts` file
+
+### API
+Flexible api pattern to adapt to the dynamic tree level:
+`${baseUrl}/${type}s/${id}?path=${queryParams.path}&page=${queryParams.page}&pageSize=${queryParams.pageSize}`
+- baseUrl = /api
+- type = db,connection,database,schema,table,column....
+- id = item id
+- path - nested path
+- page - page number
+- page_size = number of items per page
+
+![page-view](db-tree.png)
 ### UI highlights
-1. colorful icons for each category
-2. highlight row on hover
-3. change cursor when node is the last one or has no permission
-4. grey out nodes with no permission
+1. Colorful icons for each category
+2. Highlight expandable row on hover
+3. Change cursor when node is the last one or has no permission
+4. Grey out nodes with no permission
+5. Display of number of available children per node
+6. 'Load more' icon for lazy loading for each item that can
+7. be expanded. When all the items are loaded , the icon is not displayed any more
+
+### Mocking
+Mocking response data from server with `axios-mock-adapter`
+
+##
+##
 
 This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
 

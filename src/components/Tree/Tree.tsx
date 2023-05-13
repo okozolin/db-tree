@@ -8,7 +8,7 @@ import NodeIcon from "./NodeIcon";
 import NodeText from "./NodeText";
 import Tooltip from "../Tooltip";
 import TreeNode from "./TreeNode";
-import {fetchNodeData} from "../../utils/fetch";
+import { fetchNodeData } from "../../utils/fetch";
 import {Details, EmptySpace, MoreButton, NestedNode} from "./Tree.style";
 import {checkMorePages, getCurrentPath} from "../../utils/general";
 

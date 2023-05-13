@@ -1,10 +1,9 @@
-import React, {useEffect, useState} from 'react';
-import {Page, TreeNodeData} from "./types";
+import React from 'react';
 import Tree from "./components/Tree/Tree";
 import {MdFace} from "react-icons/md";
 import styled from "styled-components";
 import {platformColors} from "./constants/colors";
-import {fetchTree} from "./utils/fetch";
+import {DB} from "./constants/general";
 
 const Header = styled.div`
   text-align: center;
@@ -22,31 +21,15 @@ const MyLogo = styled.div`
   color: ${platformColors.lightPink}
 `;
 
-const MoreButton = styled.button`
-  margin: 1rem 2rem;
-  width: 8rem;
-  height: 2rem;
-  color: ${platformColors.mint};
-  border: none;
-  background-color: unset;
-  &:hover {
-    cursor: pointer;
-  }
-`;
-
 const App: React.FC = () => {
-  const [data, setData] = useState<Page<TreeNodeData>>({items: [], total: 0});
-  const [page, setPage] = useState<number>(1)
+    const initTree = {
+        id: 0,
+        label: "DB root",
+        type: DB,
+        hasPermission: true,
+        childrenTotal: 3
+    }
 
-  useEffect(() => {
-    fetchTree(page, setData);
-  }, [page]);
-
-  const onMoreClick = ()=> {
-    console.log("clicked more in App")
-    setPage((prevPage) => prevPage + 1);
-  }
-  console.log("App: page in App==>", page)
   return (
       <AppContainer>
         <Header>
@@ -55,15 +38,12 @@ const App: React.FC = () => {
             oritkozolin 2023
           </MyLogo>
         </Header>
-        {data.items.map((node:TreeNodeData, index:number)=>(
-          <div key={index}>
+          <div>
             <Tree
-                data={node}
+                data={initTree}
                 path={""}
             />
           </div>
-        ))}
-        <MoreButton onClick={onMoreClick}>Load More...</MoreButton>
       </AppContainer>
   )
 }

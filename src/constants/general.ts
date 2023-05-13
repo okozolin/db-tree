@@ -4,6 +4,7 @@ export const PAGE_SIZE = 2
 
 // NODE LABELS
 //----------------------------------
+export const DB = "db"
 export const CONNECTION = "connection"
 export const DATABASE = "database"
 export const SCHEMA = "schema"
