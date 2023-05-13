@@ -1,123 +1,82 @@
-import React, {useState} from 'react';
-import styled from 'styled-components';
-import { MdOutlineExpandMore, MdExpandLess } from "react-icons/md";
+import React, {useCallback, useState} from 'react';
+import { MdOutlineExpandMore } from "react-icons/md";
+import { BiChevronRight } from "react-icons/bi";
 import {CiCircleMore} from "react-icons/ci";
 
-import {Page, TreeNodeData, TreeNodeProps, TreeProps} from "../../types";
+import {Page, TreeNodeData,TreeProps} from "../../types";
 import NodeIcon from "./NodeIcon";
-import {platformColors} from "../../constants/colors";
 import NodeText from "./NodeText";
-import {PAGE_SIZE} from "../../constants/general";
-import {databaseService} from "../../api/dbApi";
 import Tooltip from "../Tooltip";
+import TreeNode from "./TreeNode";
+import {fetchNodeData} from "../../utils/fetch";
+import {Details, EmptySpace, MoreButton, NestedNode} from "./Tree.style";
+import {checkMorePages, getCurrentPath} from "../../utils/general";
 
-const NestedNode = styled.div`
-  margin-left: 30px;
-`;
 
-const TreeNode = styled.div<TreeNodeProps>`
-  display: flex;
-  align-items: center;
-  padding: 6px 12px;
-  border-bottom: 1px solid #eee;
-  cursor: ${props =>
-          true ? 'pointer' : 'default'};
-  color: ${props =>
-          props.$hasPermission ? '#333' : `${platformColors.disabled}`};
-  &:hover {
-     background-color: ${props =>
-            props.$hasPermission && props.$hasChildren ? '#f2f2f2' : 'transparent'};
-   }
-`;
-
-const EmptySpace = styled.div`
-  width: 1rem;
-  height: 1rem;
-`;
-
-const Details = styled.div`
-  display: flex;
-  margin-left: 4px;
-  align-items: center;
-`;
-
-const MoreButton = styled.button`
-  padding-top: 10px;
-  color: ${platformColors.mint};
-  border: none;
-  background-color: unset;
-  &:hover {
-    cursor: pointer;
-  }
-`;
-
-const Tree: React.FC<TreeProps> = ({ data }) => {
+const Tree: React.FC<TreeProps> = ({ data,path }) => {
     const [isOpen, setIsOpen] = useState<boolean>(false);
     const [page, setPage] = useState<number>(1)
     const [children, setChildren] = useState<Page<TreeNodeData>>({items: [], total: 0})
 
+    const currentPath = getCurrentPath(data, path)
 
-    const toggleOpen = () => {
-        console.log("clicked Open===>")
+    const toggleOpen = useCallback(() => {
+        !isOpen ? console.log("clicked Open ===>") : console.log("clicked Close ===>")
         setIsOpen(!isOpen);
-        const fetchNodeData = async () => {
-            const queryParams = {
-                path: "",
-                page: page,
-                pageSize: PAGE_SIZE
-            }
-            console.log("Tree: now in fetching page:", page)
-            console.log("Tree: queryParams are: ", queryParams)
-            try {
-                const res = await databaseService.getNodeById(
-                    data.id.toString(),
-                    data.type,
-                    queryParams
-                );
-                setChildren({items: res.items, total: res.total})
-            } catch (err) {
-                console.error(err);
-            }
-        };
-        fetchNodeData()
-    };
+        if (!isOpen && !children.items.length) {
+             fetchNodeData(data, path, page, setChildren)
+        }
+    },[isOpen, data, path, page]);
+
     const onMoreClick = () => {
         console.log("Tree: clicked more in data.id data.label==>", data.id, data.label)
         setPage((prevPage) => prevPage + 1);
+
+        if (hasMorePages) {
+            fetchNodeData(data, path, page + 1, setChildren)
+        }
     };
 
-    const hasChildren = (children && children.total > 0)
-    // const hasChildren = false || (children && children.items && children.items.length > 0)
+    const hasChildren = (data && Boolean(data.childrenTotal))
+    const hasMorePages = checkMorePages(data, page)
+
     const renderNestedChildren = () => {
         if (children && children.items.length > 0) {
             return children.items.map((node:TreeNodeData) => {
-                return <Tree key={node.id} data={node}/>;
+                return <Tree
+                    key={node.id}
+                    data={node}
+                    path={currentPath}
+                />
             });
         }
         return null;
     };
+
     return (
         <>
             <TreeNode
-                $hasPermission={data.hasPermission}
-                $hasChildren={hasChildren}
-                $isOpen={isOpen}
+                hasPermission={data.hasPermission}
+                hasChildren={hasChildren}
             >
-                {data.hasPermission && hasChildren ? (
-                  <>
-                    {isOpen ? <MdExpandLess/> : <MdOutlineExpandMore/>}
-                  </>
+                {data.hasPermission && data.childrenTotal ? (
+                  <div style={{  cursor: data.hasPermission && hasChildren ? 'pointer' : 'default'}} onClick={toggleOpen}>
+                    {isOpen ? <BiChevronRight/> : <MdOutlineExpandMore/>}
+                  </div>
                 ):
-                <EmptySpace />}
+                <EmptySpace />
+                }
                 <Details>
                     <NodeIcon
                         $hasPermission={data.hasPermission}
                         type={data.type}
                     />
-                    <NodeText data={data} total={children.total} onExpand={toggleOpen}/>
-                    <Tooltip title={"Load more items"}>
+                    <NodeText data={data} total={data.childrenTotal || 0}/>
+                    {data.hasPermission && data.childrenTotal && isOpen && hasMorePages ? (
+                        <Tooltip title={"Load more items"}>
                         <MoreButton onClick={onMoreClick}><CiCircleMore/></MoreButton>
                     </Tooltip>
+                    ): null}
                 </Details>
             </TreeNode>
             {data.hasPermission && isOpen &&

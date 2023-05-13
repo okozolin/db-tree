@@ -2,13 +2,18 @@ import React from "react";
 import { IconType } from 'react-icons';
 
 export interface TreeNodeProps {
+    hasPermission: boolean;
+    hasChildren: boolean | undefined;
+    children: React.ReactNode;
+}
+export interface TreeNodeContainerProps {
     $hasPermission: boolean;
     $hasChildren: boolean | undefined;
-    $isOpen: boolean;
 }
 
 export interface TreeProps {
     data: TreeNodeData;
+    path: string;
 }
 
 export interface TreeNodeData {
@@ -16,7 +21,7 @@ export interface TreeNodeData {
     label: string;
     type: string;
     hasPermission: boolean;
-    // children?: TreeNodeData[];
+    childrenTotal?: number;
 }
 export interface NodeIconProps {
     type: string;
@@ -36,7 +41,6 @@ export interface IconMapProps {
 export interface NodeTextProps {
     data: TreeNodeData;
     total: number;
-    onExpand: ()=> void
 }
 export interface Page<T> {
     items: T[];

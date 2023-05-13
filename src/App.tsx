@@ -57,7 +57,10 @@ const App: React.FC = () => {
         </Header>
         {data.items.map((node:TreeNodeData, index:number)=>(
           <div key={index}>
-            <Tree data={node}/>
+            <Tree
+                data={node}
+                path={""}
+            />
           </div>
         ))}
         <MoreButton onClick={onMoreClick}>Load More...</MoreButton>

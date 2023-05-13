@@ -13,7 +13,8 @@ const TooltipWrapper = styled.div`
 `
 const TooltipStyle = styled.div`
   position: absolute;
-  top: -25px;
+  top: -5px;
+  left: 10px;
   background: transparent;
   color: ${platformColors.mint};
   font-size: 10px;

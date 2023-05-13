@@ -29,38 +29,55 @@
 import axios, { AxiosResponse } from 'axios';
 import {Page, QueryParams, TreeNodeData} from "../types";
 import MockAdapter from 'axios-mock-adapter';
+import {
+    db0,
+    dbConnections1,
+    dbconnections1Dabase3,
+    dbConnections1Page2,
+    dbConnections1Page3
+} from "../mockApi/dbMockApiResponse";
 
 // Create a new instance of axios
-export const axiosInstance = axios.create({
+const axiosInstance = axios.create({
     baseURL: 'localhost:3000/api'
 });
 
+// it's here for mocking purposes. does not work if defined in another module
 // Create a new instance of MockAdapter and pass in the axios instance
-const mockAdapter = new MockAdapter(axiosInstance);
+export const mockAdapter = new MockAdapter(axiosInstance);
 
-// Configure the mock adapter to intercept GET requests to the /api/posts endpoint
-//it's here for mocking purposes
+// Configure the mock adapter to intercept GET requests to the /api/db various endpoints
 mockAdapter.onGet('/db',{params: {
         path: "" ,
         page: 1,
         pageSize: 2
-    }}).reply(200, {
-    items: [
-        {
-            "id": 1,
-            "label": "Node 1",
-            "type": "connection",
-            "hasPermission": true
-        },
-        {
-            "id": 25,
-            "label": "Node 25",
-            "type": "connection",
-            "hasPermission": true
-        }
-    ],
-    total: 3
-});
+    }}).reply(200, db0);
+
+mockAdapter.onGet('/db/connections/1',{params: {
+        path: "" ,
+        page: 1,
+        pageSize: 2
+    }}).reply(200, dbConnections1);
+
+mockAdapter.onGet('/db/connections/1',{params: {
+        path: "" ,
+        page: 2,
+        pageSize: 2
+    }}).reply(200, dbConnections1Page2);
+
+mockAdapter.onGet('/db/connections/1',{params: {
+        path: "" ,
+        page: 3,
+        pageSize: 2
+    }}).reply(200, dbConnections1Page3);
+
+mockAdapter.onGet('/db/databases/3',{params: {
+        path: "connectionId=1;" ,
+        page: 1,
+        pageSize: 2
+    }}).reply(200, dbconnections1Dabase3);
+
+
 
 class DatabaseService {
     private baseUrl = '/db';
